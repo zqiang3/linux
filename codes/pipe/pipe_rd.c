@@ -25,13 +25,20 @@ int main(void)
         int len = read(fd[0], buf, sizeof(buf));
         write(STDOUT_FILENO, buf, len);
         close(fd[0]);  // need to close fd manually
-
     }
     else  // parent
     {
         close(fd[0]);  // close read fd
-        char *text = "hello, world";
-        write(fd[1], text, strlen(text));
+        int count = 0;
+        while (count < 3)
+        {
+            printf("This is parent process. count: %d\n", count);
+            char *text = "Hello, my friend.\n";
+            write(fd[1], text, strlen(text));
+            printf("write success. count: %d\n", count);
+            sleep(0.1);
+            count ++;
+        }
         close(fd[1]);
     }
     return 0;
