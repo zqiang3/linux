@@ -1,0 +1,1 @@
+由于Unix版本的多样性，电子电气工程协会（IEEE）开 发了一个独立的Unix标准，这个新的ANSI Unix标准被称为计算机环境的可移植性操作系统界面（PSOIX）。现有大部分Unix和流行版本都是遵循POSIX标准的，而Linux从一开始就遵 循POSIX标准。
