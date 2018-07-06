@@ -18,6 +18,7 @@ void *add1(void *cnt)
     {
         printf("add1 i: %d\n", i);
         p->sum += 1;
+        sleep(0.05);
     }
     pthread_mutex_unlock(&(p->lock));
     pthread_exit(NULL);
@@ -33,6 +34,7 @@ void *add2(void *cnt)
     {
         printf("add2 i: %d\n", i);
         p->sum += 1;
+        sleep(0.05);
     }
     pthread_mutex_unlock(&(p->lock));
     pthread_exit(NULL);
