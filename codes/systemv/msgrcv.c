@@ -1,48 +1,32 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <linux/ipc.h>
-#include <linux/msg.h>
-
-void err_quit(const char*);
-void println(char *ptr)
-{
-    printf("%s\n", ptr);
-}
+#include "msg.h"
 
 int main(int argc, char **argv)
 {
-    if(argc < 4)
+    if(argc < 3)
     {
-        printf("arc less than 4");
+        printf("Usage: read <path> <type>");
         exit(1);
         
     }
+
+    int ret;
+    char *path = argv[1];
+    int type = atoi(argv[2]);
+    printf("type: %d\n", type);
+    int mqid = open_msg(path);
+    if(mqid == -1)
+        err_quit("open msg failed");
+
+    struct msgmbuf buff;
+    int flag = IPC_NOWAIT;
+    ret = msgrcv(mqid, &buff, 10, type, flag);
+    if(ret < 0)
+        err_quit("receive msg failed");
     else
-
     {
-        struct msgbuf *buff;
-        char *path = argv[1];
-        int len = atoi(argv[2]);
-        int type = atoi(argv[3]);
-        key_t key = ftok(path, 1);
-        int open_mode = 0666 | IPC_CREAT;
-        int mqid = msgget(key, open_mode);
-
-        buff = malloc(MSGMAX);
-        int flag = 0;
-        int n = msgrcv(mqid, buff, MSGMAX, type, flag);
-        printf("read %d bytes, type=%ld\n", n, buff->mtype);
-        return 0;
-        
+        println("receive msg success");
+        printf("msg: %s\n", buff.mtext);
     }
 
-
-}
-
-
-void err_quit(const char *info)
-{
-    printf("%s\n", info);
-    exit(1);
+    return 0;
 }
