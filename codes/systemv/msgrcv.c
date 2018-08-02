@@ -18,8 +18,8 @@ int main(int argc, char **argv)
         err_quit("open msg failed");
 
     struct msgmbuf buff;
-    int flag = IPC_NOWAIT;
-    ret = msgrcv(mqid, &buff, 10, type, flag);
+    int flag = IPC_NOWAIT;  // non-blocking
+    ret = msgrcv(mqid, &buff, 10, type, 0);
     if(ret < 0)
         err_quit("receive msg failed");
     else

@@ -5,9 +5,11 @@
 #include <sys/ipc.h>
 #include <sys/msg.h>
 
+#define SVMSG_MODE 0644
+
 struct msgmbuf{
     int mtype;
-    char mtext[10];
+    char mtext[15];
 };
 
 void err_quit(const char*);

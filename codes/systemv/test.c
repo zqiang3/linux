@@ -128,7 +128,7 @@ void receive_msg(int mqid, struct msqid_ds info)
     int ret = msgrcv(mqid, &buff, 10, 0, msg_rflags);
     if(ret < 0)
     {
-        perror("msg receive error");
+        perror("msg receive error:");
         exit(1);
     }
     else
