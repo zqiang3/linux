@@ -53,7 +53,7 @@ int main(int argc, char **argv)
     if(key != -1)
     {
         printf("create key success\n");
-        printf("key: %d\n", (int)key);
+        printf("key: 0x%x\n", (int)key);
         
     }
     else
@@ -80,6 +80,8 @@ int main(int argc, char **argv)
         perror("msgsnd error");
         exit(1);
     }
+    printf("after send\n");
+    show_attr(mqid, info);
 
 
     flags = IPC_NOWAIT | MSG_NOERROR;
@@ -105,6 +107,10 @@ int main(int argc, char **argv)
         perror("msgctl set error");
         exit(1);
     }
+    else
+    {
+        println("ctl queue succes");
+    }
     show_attr(mqid, info);
 
     ret = msgctl(mqid, IPC_RMID, NULL);
@@ -112,6 +118,10 @@ int main(int argc, char **argv)
     {
         perror("msgctl remove error");
         exit(1);
+    }
+    else
+    {
+        printf("remove msgqueue success\n");
     }
 
 
