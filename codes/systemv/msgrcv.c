@@ -2,24 +2,37 @@
 
 int main(int argc, char **argv)
 {
-    if(argc < 3)
+    println("Usage: read [-q]");
+    int mqid = 0;
+
+    char **ptr = argv;
+    int i;
+    char c;
+    for(i=0; i<argc; i++)
     {
-        printf("Usage: read <path> <type>");
-        exit(1);
-        
+        char *p = argv[i];
+        if(p[0] == '-' && strlen(p)>1 && p[1] == 'q')
+        {
+            p += 2;
+            mqid = atoi(p);
+            printf("specify mqid: %d\n", mqid);
+            break;
+        }
     }
 
     int ret;
-    char *path = argv[1];
-    int type = atoi(argv[2]);
-    printf("type: %d\n", type);
-    int mqid = open_msg(path);
+    if(mqid <= 0)
+    {
+        char *path = argv[1];
+        int type = atoi(argv[2]);
+        mqid = open_msg(path);
+    }
     if(mqid == -1)
         err_quit("open msg failed");
 
     struct msgmbuf buff;
     int flag = IPC_NOWAIT;  // non-blocking
-    ret = msgrcv(mqid, &buff, 10, type, 0);
+    ret = msgrcv(mqid, &buff, MSG_MAX, 0, 0);
     if(ret < 0)
         err_quit("receive msg failed");
     else
