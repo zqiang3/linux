@@ -32,13 +32,16 @@ int main(int argc, char **argv)
 
     struct msgmbuf buff;
     int flag = IPC_NOWAIT;  // non-blocking
-    ret = msgrcv(mqid, &buff, MSG_MAX, 0, 0);
+    struct mymesg new_buff;
+    ret = mesg_recv(mqid, &new_buff);
     if(ret < 0)
         err_quit("receive msg failed");
     else
     {
         println("receive msg success");
-        printf("msg: %s\n", buff.mtext);
+        printf("msg data: %s\n", new_buff.mesg_data);
+        printf("msg length: %ld\n", new_buff.mesg_len);
+        printf("msg type: %ld\n", new_buff.mesg_type);
     }
 
     return 0;

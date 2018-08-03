@@ -37,3 +37,16 @@ int open_msg(const char *path)
     }
 }
 
+ssize_t mesg_recv(int id, struct mymesg *mptr)
+{
+    ssize_t n;
+    n = msgrcv(id, &(mptr->mesg_type), MSG_MAX, mptr->mesg_type, 0);
+    mptr->mesg_len = n;
+
+    return n;
+}
+
+ssize_t mesg_send(int id, struct mymesg *mptr)
+{
+    return (msgsnd(id, &(mptr->mesg_type), mptr->mesg_len, 0));
+}
