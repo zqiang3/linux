@@ -11,6 +11,18 @@ void err_quit(const char *info)
     exit(1);
 }
 
+void sig_child(int signo)
+{
+    pid_t pid;
+    int stat;
+
+    while( (pid = waitpid(-1, &stat, WNOHANG)) > 0)
+    {
+        printf("catch child process: %d\n", pid);
+    }
+    return;
+}
+
 int open_msg(const char *path)
 {
     

@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
+#include <signal.h>
 
 #define MSG_MAX 8092
 #define SVMSG_MODE 0644
@@ -21,6 +22,7 @@ struct mymesg{
     char mesg_data[MSG_MAX];
 };
 
+void sig_child(int);
 void err_quit(const char*);
 int open_msg(const char *path);
 void println(const char *ptr);
