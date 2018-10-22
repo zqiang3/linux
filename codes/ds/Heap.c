@@ -96,6 +96,8 @@ void insertHeap(Heap* heap, ElemType value)
     {
         if(arr[child] < arr[parent])
             swap(arr, child, parent);
+        else
+            break;
         child = parent;
         parent = child / 2;
     }
