@@ -8,23 +8,23 @@ typedef struct
 {
     ElemType *arr;
     int size;
-}Tree;
+}Heap;
 
-Tree* initTree();
-void appendTree(Tree *tree, ElemType value);
-void appendValues(Tree *tree, ElemType *arr, int sum);
-void traverseTree(Tree *tree);
+Heap* initHeap();
+void appendHeap(Heap *heap, ElemType value);
+void appendValues(Heap *heap, ElemType *arr, int sum);
+void traverseHeap(Heap *heap);
 void _traverse(ElemType *arr, int i);
 
 int main(int argc, char **argv)
 {
-    Tree *tree = initTree();
+    Heap *heap = initHeap();
     int arr[] = 
     {
        4, 9, 17, 12, 19, 20, 60, 65, 30, 50 
     };
-    appendValues(tree, arr, sizeof(arr) / sizeof(ElemType));
-    traverseTree(tree);
+    appendValues(heap, arr, sizeof(arr) / sizeof(ElemType));
+    traverseHeap(heap);
     
 
     printf("hello\n");
@@ -32,42 +32,42 @@ int main(int argc, char **argv)
 }
 
 
-Tree* initTree()
+Heap* initHeap()
 {
-    Tree *tree = (Tree*)malloc(sizeof(Tree));
-    tree->size = 0;
-    tree->arr = (ElemType*)malloc(sizeof(ElemType)*MAX);
+    Heap *heap = (Heap*)malloc(sizeof(Heap));
+    heap->size = 0;
+    heap->arr = (ElemType*)malloc(sizeof(ElemType)*MAX);
     int i;
     for(i = 0; i < MAX; i++)
-        tree->arr[i] = 0;
+        heap->arr[i] = 0;
 
-    return tree;
+    return heap;
 }
 
-void appendTree(Tree *tree, ElemType value)
+void appendHeap(Heap *heap, ElemType value)
 {
-    if((tree->size) >= (MAX - 1))
+    if((heap->size) >= (MAX - 1))
         return;
 
-    tree->size++;
-    tree->arr[tree->size] = value;
+    heap->size++;
+    heap->arr[heap->size] = value;
 }
 
-void appendValues(Tree *tree, ElemType *arr, int sum)
+void appendValues(Heap *heap, ElemType *arr, int sum)
 {
     int i;
     for(i = 0; i < sum; i++)
-        appendTree(tree, arr[i]);
+        appendHeap(heap, arr[i]);
 }
 
 
-void traverseTree(Tree *tree)
+void traverseHeap(Heap *heap)
 {
-    if(!(tree->arr))
+    if(!(heap->arr))
         return;
 
     int i = 1;
-    _traverse(tree->arr, i);
+    _traverse(heap->arr, i);
 }
 
 
