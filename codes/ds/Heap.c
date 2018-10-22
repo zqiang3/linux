@@ -10,11 +10,13 @@ typedef struct
     int size;
 }Heap;
 
+void swap(ElemType *arr, int i, int j);
 Heap* initHeap();
 void appendHeap(Heap *heap, ElemType value);
 void appendValues(Heap *heap, ElemType *arr, int sum);
 void traverseHeap(Heap *heap);
 void _traverse(ElemType *arr, int i);
+void insertHeap(Heap* heap, ElemType value);
 
 int main(int argc, char **argv)
 {
@@ -24,6 +26,9 @@ int main(int argc, char **argv)
        4, 9, 17, 12, 19, 20, 60, 65, 30, 50 
     };
     appendValues(heap, arr, sizeof(arr) / sizeof(ElemType));
+    traverseHeap(heap);
+
+    insertHeap(heap, 2);
     traverseHeap(heap);
     
 
@@ -79,4 +84,28 @@ void _traverse(ElemType *arr, int i)
     _traverse(arr, i * 2);
     printf("%d\n", arr[i]);
     _traverse(arr, i * 2 + 1);
+}
+
+void insertHeap(Heap* heap, ElemType value)
+{
+    appendHeap(heap, value);
+    int child = heap->size;
+    ElemType *arr = heap->arr;
+    int parent = child / 2;
+    while(parent > 0)
+    {
+        if(arr[child] < arr[parent])
+            swap(arr, child, parent);
+        child = parent;
+        parent = child / 2;
+    }
+}
+
+
+void swap(ElemType *arr, int i, int j)
+{
+    ElemType temp;
+    temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
 }
