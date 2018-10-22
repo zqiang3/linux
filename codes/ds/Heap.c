@@ -11,28 +11,36 @@ typedef struct
 }Heap;
 
 void swap(ElemType *arr, int i, int j);
+int randint();
+Heap* randomTest(int num);
+
 Heap* initHeap();
-void appendHeap(Heap *heap, ElemType value);
-void appendValues(Heap *heap, ElemType *arr, int sum);
+void insertHeap(Heap* heap, ElemType value);
 void traverseHeap(Heap *heap);
 void _traverse(ElemType *arr, int i);
 void insertHeap(Heap* heap, ElemType value);
+void deleteMin(Heap* heap);
+void printHeap(Heap* heap);
 
 int main(int argc, char **argv)
 {
     Heap *heap = initHeap();
-    int arr[] = 
-    {
-       4, 9, 17, 12, 19, 20, 60, 65, 30, 50 
-    };
-    appendValues(heap, arr, sizeof(arr) / sizeof(ElemType));
-    traverseHeap(heap);
+    insertHeap(heap, 13);
+    insertHeap(heap, 14);
+    insertHeap(heap, 16);
+    insertHeap(heap, 19);
+    insertHeap(heap, 21);
+    insertHeap(heap, 19);
+    insertHeap(heap, 68);
+    insertHeap(heap, 65);
+    insertHeap(heap, 26);
+    insertHeap(heap, 32);
+    insertHeap(heap, 22);
+    printHeap(heap);
 
-    insertHeap(heap, 2);
-    traverseHeap(heap);
+    deleteMin(heap);
+    printHeap(heap);
     
-
-    printf("hello\n");
     return 0;
 }
 
@@ -47,22 +55,6 @@ Heap* initHeap()
         heap->arr[i] = 0;
 
     return heap;
-}
-
-void appendHeap(Heap *heap, ElemType value)
-{
-    if((heap->size) >= (MAX - 1))
-        return;
-
-    heap->size++;
-    heap->arr[heap->size] = value;
-}
-
-void appendValues(Heap *heap, ElemType *arr, int sum)
-{
-    int i;
-    for(i = 0; i < sum; i++)
-        appendHeap(heap, arr[i]);
 }
 
 
@@ -88,19 +80,57 @@ void _traverse(ElemType *arr, int i)
 
 void insertHeap(Heap* heap, ElemType value)
 {
-    appendHeap(heap, value);
-    int child = heap->size;
+    int child, parent;
     ElemType *arr = heap->arr;
-    int parent = child / 2;
-    while(parent > 0)
+
+    for(child = heap->size + 1; ; )
     {
-        if(arr[child] < arr[parent])
-            swap(arr, child, parent);
-        else
-            break;
-        child = parent;
         parent = child / 2;
+        if(parent <= 0 || arr[parent] <= value )
+            break;
+
+        arr[child] = arr[parent];
+        child = parent;
     }
+
+    arr[child] = value;
+    heap->size++;
+}
+
+void deleteMin(Heap* heap)
+{
+    int size = heap->size;
+    if(size <= 0)
+        return;
+
+    int parent;
+    ElemType *arr = heap->arr;
+    int child;
+    ElemType last = arr[heap->size];
+    for(parent = 1; ;)
+    {
+        child = parent * 2;
+        if(child > size)
+            break;
+
+        
+        if(child < size && arr[child + 1] < arr[child])
+            child++;
+
+        if(last < arr[child])
+            break;
+        else
+        {
+            arr[parent] = arr[child];
+            parent = child;
+            
+        }
+
+    }
+    arr[parent] = last;
+    heap->size--;
+
+    return;
 }
 
 
@@ -111,3 +141,37 @@ void swap(ElemType *arr, int i, int j)
     arr[i] = arr[j];
     arr[j] = temp;
 }
+
+void printHeap(Heap* heap)
+{
+    int i;
+    for(i = 0; i <= heap->size; i++)
+        printf("%d ", heap->arr[i]);
+
+    printf("\n");
+}
+
+
+Heap* randomTest(int num)
+{
+    Heap *heap = initHeap();
+
+    int i, ranv;
+    for(i = 0; i < num; i++)
+    {
+        ranv = randint();
+        printf("insert %d\n", ranv);
+        insertHeap(heap, ranv);
+        
+    }
+
+    printHeap(heap);
+    return heap;
+    
+}
+
+int randint()
+{
+    return rand() % 100 + 1;
+}
+
