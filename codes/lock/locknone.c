@@ -57,12 +57,16 @@ int main(int argc, char **argv)
     }
 
     pid = getpid();
-    fd = open(SEQFILE, O_RDWR | O_CREAT, 0666);
+    fd = open(SEQFILE, O_RDWR |O_NONBLOCK | O_CREAT, 0666);
     loop = atoi(argv[1]);
     for(i = 0; i < loop; i++)
     {
         lseek(fd, 0, SEEK_SET);
         n = read(fd, line, MAX);
+        if(n < 0)
+        {
+            perror("read error");
+        }
         line[n] = '\0';
 
         n = sscanf(line, "%ld\n", &seqno);

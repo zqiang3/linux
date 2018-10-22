@@ -1,15 +1,5 @@
-#include <stdio.h>
-#include <pthread.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <fcntl.h>
+#include "lock.h"
 
-#define SEQFILE "seqno"
-#define MAX 8192 
-
-#define read_lock(fd, offset, whence, len) lock_reg(fd, F_SETLK, F_RDLCK, offset, whence, len)
-#define writew_lock(fd, offset, whence, len) lock_reg(fd, F_SETLKW, F_WRLCK, offset, whence, len)
 
 void my_lock(int fd)
 {
@@ -29,17 +19,6 @@ void my_unlock(int fd)
     return;
 }
 
-int lock_reg(int fd, int cmd, int type, off_t offset, int whence, off_t len)
-{
-    struct flock lock;
-
-    lock.l_type = type;
-    lock.l_start = offset;
-    lock.l_whence = whence;
-    lock.l_len = len;
-
-    return fcntl(fd, cmd, &lock);
-}
 
 int main(int argc, char **argv)
 {
@@ -49,6 +28,7 @@ int main(int argc, char **argv)
     ssize_t n;
     char line[MAX];
     int loop;
+    struct timeval time_begin, time_end;
 
     if(argc < 2)
     {
@@ -59,8 +39,11 @@ int main(int argc, char **argv)
     pid = getpid();
     fd = open(SEQFILE, O_RDWR | O_CREAT, 0666);
     loop = atoi(argv[1]);
+    int t1 = time(NULL);
+    gettimeofday(&time_begin, NULL);
     for(i = 0; i < loop; i++)
     {
+        //file_lock(fd);
         my_lock(fd);
 
         lseek(fd, 0, SEEK_SET);
@@ -68,15 +51,17 @@ int main(int argc, char **argv)
         line[n] = '\0';
 
         n = sscanf(line, "%ld\n", &seqno);
-        printf("%s: pid=%ld, seq# = %ld\n", argv[0], (long)pid, seqno);
-        sleep(0.1);
+        //printf("%s: pid=%ld, seq# = %ld\n", argv[0], (long)pid, seqno);
         seqno++;
 
         snprintf(line, sizeof(line), "%ld\n", seqno);
         lseek(fd, 0, SEEK_SET);
         write(fd, line, strlen(line));
+        //file_unlock(fd);
         my_unlock(fd);
-    }
+   }
+    gettimeofday(&time_end, NULL);
+    printf("time used: %ld sec, %ld usec\n", time_end.tv_sec - time_begin.tv_sec, time_end.tv_usec-time_begin.tv_usec);
     close(fd);
     exit(0);
 }
