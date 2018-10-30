@@ -1,56 +1,143 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "tree.h"
 
-typedef int ElemType;
-typedef struct Node
+
+void delete_tree(Tree* tree, ElemType value)
 {
-    ElemType data;
-    struct Node* left;
-    struct Node* right;
-}Node;
+    Node *cur = head;
+    Node *found = NULL;
+    Node *pre = NULL;
+    while(cur)
+    {
+        pre = cur;
+        if(value == cur->value)
+        {
+            found = cur;
+            break;
+        }
+        if(value < cur->value)
+            cur = cur->left;
+        else
+            cur = cur->right;
+    }
 
-void appendTree(Node* parent, int is_left, ElemType data);
-void tranverseTree(Node* root);
+    if(!found)
+        return;
 
+    if(!(found->left || found->right))
+    {
+        if(!pre)
+            tree->head = found;
 
-int main(int argc, char **agrv)
-{
-    Node *cur;
-    Node *root = (Node *)malloc(sizeof(Node));
-    root->data = 0;
-
-    cur = root;
-    appendTree(cur, 1, 10);
-    cur = cur->left;
-    appendTree(cur, 0, 20);
-    cur = cur->right;
-    appendTree(cur, 1, 30);
-
-    tranverseTree(root);
-}
-
-
-void appendTree(Node* parent, int is_left, ElemType data)
-{
-    Node *p = (Node *)malloc(sizeof(Node));
-    p->data = data;
-    p->left = NULL;
-    p->right= NULL;
-    if(is_left)
-        parent->left = p;
+        if(value < pre->value)
+            pre->left = NULL;
+        else
+            pre->right = NULL;
+    }
+    else if(found->left && !found->right)
+    {
+        if(!pre)
+            tree->head = found->left;
+        if(value < pre->value)
+            pre->left = found->left;
+        else
+            pre->right = found->left;
+    }
+    else if(!found->left && found->right)
+    {
+        if(!pre)
+            tree->head = found->right;
+        if(value < pre->value)
+            pre->left = found->right;
+        else
+            pre->right = found->right;
+    }
     else
-        parent->right = p;
+    {
+        if(!pre)
+            tree->head = found->right;
+
+        if(value < pre->value)
+            pre->left = found->right
+        else
+            pre->right = found->right;
+
+        Node* cur = found->right;
+        while(cur->left)
+            cur = cur->left;
+
+        cur->left = found->left;
+    }
 }
 
 
-void tranverseTree(Node* p)
+void append_tree(Tree* tree, ElemType value)
+// 排序二叉树，增加节点
+{
+    Node *node = create_node(value);
+
+    Node *head = tree->head;
+    if(!head)
+    {
+        tree->head = node;
+        return;
+    }
+
+    Node *cur = tree->head;
+    while(1)
+    {
+        if(value < cur->value)
+        {
+            if(cur->left == NULL)
+            {
+                cur->left = node;
+                break;
+            }
+            cur = cur->left;
+        }
+        else
+        {
+            if(cur->right == NULL)
+            {
+                cur->right = node;
+                break;
+            }
+            cur = cur->right;
+        }
+    }
+}
+
+Node* create_node(ElemType value)
+{
+    Node *node = (Node*)malloc(sizeof(Node));
+    node->value = value;
+    node->left = NULL;
+    node->right= NULL;
+    return node;
+}
+
+
+void _tranverse_tree(Node* p)
 {
     if(!p)
         return;
 
     if(p->left)
-        tranverseTree(p->left);
-    printf("%d\n", p->data);
+        _tranverse_tree(p->left);
+    printf("%d\n", p->value);
     if(p->right)
-        tranverseTree(p->right);
+        _tranverse_tree(p->right);
+}
+
+void tranverse_tree(Tree *tree)
+{
+    _tranverse_tree(tree->head);
+}
+
+Tree* init_tree()
+{
+    Tree *tree = (Tree*)malloc(sizeof(Tree));
+    tree->head = NULL;
+    return tree;
 }
