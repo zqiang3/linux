@@ -5,17 +5,17 @@
 
 void delete_tree(Tree* tree, ElemType value)
 {
-    Node *cur = head;
+    Node *cur = tree->head;
     Node *found = NULL;
     Node *pre = NULL;
     while(cur)
     {
-        pre = cur;
         if(value == cur->value)
         {
             found = cur;
             break;
         }
+        pre = cur;
         if(value < cur->value)
             cur = cur->left;
         else
@@ -57,9 +57,8 @@ void delete_tree(Tree* tree, ElemType value)
     {
         if(!pre)
             tree->head = found->right;
-
-        if(value < pre->value)
-            pre->left = found->right
+        else if(value < pre->value)
+            pre->left = found->right;
         else
             pre->right = found->right;
 
@@ -104,7 +103,7 @@ void append_tree(Tree* tree, ElemType value)
                 break;
             }
             cur = cur->right;
-        }
+       }
     }
 }
 
