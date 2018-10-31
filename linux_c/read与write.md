@@ -27,3 +27,22 @@ write()会把参数buf所指的内存写入count个字节到参数放到所指�
 **返回值**
 
 如果顺利write()会返回实际写入的字节数。当有错误发生时则返回-1，错误代码存入errno中 
+
+## 示例
+
+```c
+#include <stdio.h>
+#include <unistd.h>
+#define MAX 1000
+
+int main(int argc, char *argv[])
+{
+    char buf[MAX];
+    int n;
+    while( (n = read(STDIN_FILENO, buf, MAX)) > 0)
+        write(STDOUT_FILENO, buf, n);     
+    
+    return 0;
+}
+```
+
