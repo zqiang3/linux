@@ -1,6 +1,6 @@
 ## APUE示意图
 
-![](cmem.png)
+[![cmem.png](https://i.postimg.cc/cJkgvSbF/cmem.png)](https://postimg.cc/cKY4zVZ3)
 
 ## 例子
 
