@@ -3,7 +3,6 @@ import sys
 import random
 import time
 from fib_num import fib
-import pdb
 
 
 MAX = 10000000
@@ -20,16 +19,6 @@ def create_nums(filename, n):
 
     f.close()
 
-def record_search_result(filename, result):
-    f = open(filename, 'w')
-    for item in result:
-        v, r = item
-        f.write('{},{}'.format(v, r))
-        f.write('\n')
-
-    f.close()
-
-
 
 
 def load_nums(filename):
@@ -41,29 +30,17 @@ def load_nums(filename):
 
     return arr
 
-def load_lines(filename):
-    data = []
-    f = open(filename, 'r')
-    for line in f:
-        line = line.strip()
-        values = line.split(',')
-        values = map(int, values)
-        data.append(values)
-
-    return data
-
-
 
 def find_it(arr, value):
     """普通查找算法"""
     if not isinstance(arr, list):
-        return 0 
+        return False
 
     for i in arr:
         if i == value:
-            return 1 
+            return True
 
-    return 0 
+    return False
 
 
 def binary_search(arr, value):
@@ -73,75 +50,73 @@ def binary_search(arr, value):
 
 def _b_search(value, arr, left, right):
     if left > right:
-        return 0 
+        return False
 
     mid = (left + right) / 2
     mid_value = arr[mid]
     if value == mid_value:
-        return 1
+        return True
     elif value > mid_value:
         return _b_search(value, arr, mid+1, right)
     else:
         return _b_search(value, arr, left, mid-1)
 
 
-def binary_search_pro(arr, value):
+def binary_search_fib(arr, value):
     """二分查找算法"""
-    return _b_search_pro(value, arr, 0, len(arr) - 1)
+    n = len(arr) - 1
+    k, sum = find_fib_k(n)
+    max = arr[-1]
+    arr.extend([max] * (sum - n))
+    left = 0
+    right = n
+    
+    return _b_search_pro(value, arr, left, right, k)
 
 
-def _b_search_pro(value, arr, left, right):
+def _b_search_fib(value, arr, left, right, k):
     if left > right:
         return False
+    elif left == right:
+        return value == arr[left]]
 
     if value < arr[left]:
         return False
     elif value > arr[right]:
         return False
 
-    if left == right:
-        mid = left
-    else:
-        _mid = (value - arr[left]) * 1.0 / (arr[right] - arr[left]) * (right - left)
-        mid = left + int(_mid) 
 
+    mid = left + fib(k-1) - 1
     mid_value = arr[mid]
     if value == mid_value:
         return True
     elif value > mid_value:
-        return _b_search_pro(value, arr, mid+1, right)
+        return _b_search_pro(value, arr, mid+1, right, k-2)
     else:
-        return _b_search_pro(value, arr, left, mid-1)
+        return _b_search_pro(value, arr, left, mid, k-1)
 
 
-def test_nornal_search(arr, test_arr):
+def test_nornal_search(arr):
     """测试普通查找算法"""
-    result = []
-    for value in test_arr:
-        ret = find_it(arr, value)
-        result.append((value, ret))
-
-    return result
+    for i in xrange(TEST_NUM):
+        value = random.randint(0, MAX)
+        result = find_it(arr, value)
+        print 'value: {}, found: {}'.format(value, found)
 
 
-
-def test_binary_search(arr, test_data):
+def test_binary_search(arr):
     """测试二分查找算法"""
-    arr.sort()
-    for item in test_data:
-        value, ans = item
+    for i in xrange(TEST_NUM):
+        value = random.randint(0, MAX)
         result = binary_search(arr, value)
-        if result != ans:
-            print "error, value = {}".format(value)
+        #print 'value: {}, found: {}'.format(value, result)
 
-def test_binary_search_pro(arr, test_data):
+def test_binary_search_pro(arr):
     """测试二分查找算法"""
-    arr.sort()
-    for item in test_data:
-        value, ans = item
+    for i in xrange(TEST_NUM):
+        value = random.randint(0, MAX)
         result = binary_search_pro(arr, value)
-        if result != ans:
-            print "error, value = {}".format(value)
+        #print 'value: {}, found: {}'.format(value, result)
 
 
 def time_func(func, **args):
@@ -154,21 +129,18 @@ def time_func(func, **args):
 
 def test_search():
     args = sys.argv
-    if len(args) < 3:
+    if len(args) < 2:
         print 'args error'
         sys.exit(1)
 
     filename = args[1]
-    test_file = args[2]
 
     arr = load_nums(filename)
-    test_data = load_lines(test_file);
+    arr.sort()
 
     #time_func(test_nornal_search, arr=arr)
-    #result = test_nornal_search(arr, test_data)
-    #record_search_result('check.txt', result)
-    #time_func(test_binary_search, arr=arr, test_data=test_data)
-    time_func(test_binary_search_pro, arr=arr, test_data=test_data)
+    time_func(test_binary_search_pro, arr=arr)
+    time_func(test_binary_search, arr=arr)
 
     print 'finished'
 
@@ -183,7 +155,21 @@ def make_nums():
     n = int(args[2])
     create_nums(filename, n)
 
+def find_fib_k(num):
+    i = 0
+    value = 0
+    while True:
+        value = fib(i)
+        if value >= num:
+            break
+        i += 1
+
+    return i, value
+
+
+
 
 if __name__ == '__main__':
-    # 676754
-    test_search()
+    #test_search()
+    print fib(50)
+    
