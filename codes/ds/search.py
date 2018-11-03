@@ -7,7 +7,6 @@ import pdb
 
 
 MAX = 10000000
-TEST_NUM = 10000
 
 
 def create_nums(filename, n):
@@ -20,7 +19,9 @@ def create_nums(filename, n):
 
     f.close()
 
+
 def record_search_result(filename, result):
+    """普通搜索算法 结果记录作为参照"""
     f = open(filename, 'w')
     for item in result:
         v, r = item
@@ -28,7 +29,6 @@ def record_search_result(filename, result):
         f.write('\n')
 
     f.close()
-
 
 
 
@@ -40,6 +40,7 @@ def load_nums(filename):
         arr.append(int(line))
 
     return arr
+
 
 def load_lines(filename):
     data = []
@@ -114,6 +115,52 @@ def _b_search_pro(value, arr, left, right):
         return _b_search_pro(value, arr, left, mid-1)
 
 
+def fib_search(arr, value):
+    """fib search"""
+    n = len(arr) - 1
+    k, sum = find_fib_k(n)
+    max = arr[-1]
+    arr.extend([max] * (sum - n))
+    left = 0
+    right = n
+    
+    return _fib_search(value, arr, left, right, k)
+
+
+def _fib_search(value, arr, left, right, k):
+    if left > right:
+        return False
+    elif left == right:
+        return value == arr[left]]
+
+    if value < arr[left]:
+        return False
+    elif value > arr[right]:
+        return False
+
+
+    mid = left + fib(k-1) - 1
+    mid_value = arr[mid]
+    if value == mid_value:
+        return True
+    elif value > mid_value:
+        return _fib_search(value, arr, mid+1, right, k-2)
+    else:
+        return _fib_search(value, arr, left, mid, k-1)
+
+
+def find_fib_k(num):
+    i = 0
+    value = 0
+    while True:
+        value = fib(i)
+        if value >= num:
+            break
+        i += 1
+
+    return i, value
+
+
 def test_nornal_search(arr, test_arr):
     """测试普通查找算法"""
     result = []
@@ -122,7 +169,6 @@ def test_nornal_search(arr, test_arr):
         result.append((value, ret))
 
     return result
-
 
 
 def test_binary_search(arr, test_data):
@@ -134,12 +180,23 @@ def test_binary_search(arr, test_data):
         if result != ans:
             print "error, value = {}".format(value)
 
+
 def test_binary_search_pro(arr, test_data):
     """测试二分查找算法"""
     arr.sort()
     for item in test_data:
         value, ans = item
         result = binary_search_pro(arr, value)
+        if result != ans:
+            print "error, value = {}".format(value)
+
+
+def test_fib_search(arr, test_data):
+    """测试斐波契那查找算法"""
+    arr.sort()
+    for item in test_data:
+        value, ans = item
+        result = fib_search(arr, value)
         if result != ans:
             print "error, value = {}".format(value)
 
@@ -162,26 +219,41 @@ def test_search():
     test_file = args[2]
 
     arr = load_nums(filename)
-    test_data = load_lines(test_file);
+    test_data = load_lines(test_file)
 
-    #time_func(test_nornal_search, arr=arr)
-    #result = test_nornal_search(arr, test_data)
-    #record_search_result('check.txt', result)
     #time_func(test_binary_search, arr=arr, test_data=test_data)
-    time_func(test_binary_search_pro, arr=arr, test_data=test_data)
+    #time_func(test_binary_search_pro, arr=arr, test_data=test_data)
+    time_func(test_fib_search, arr=arr, test_data=test_data)
 
     print 'finished'
 
 
 def make_nums():
+    """生成随机数，写到文件"""
+    args = sys.argv
+    if len(args) < 3:
+        print 'args error'
+        sys.exit(1)
+
+
+    filename = args[1]
+    n = int(args[2])
+    create_nums(filename, n)
+
+
+def make_test_example():
+    """生成测试用例"""
     args = sys.argv
     if len(args) < 3:
         print 'args error'
         sys.exit(1)
 
     filename = args[1]
-    n = int(args[2])
-    create_nums(filename, n)
+    test_file = args[2]
+    arr = load_nums(filename)
+    test_arr = load_nums(test_file)
+    result = test_nornal_search(arr, test_arr)
+    record_search_result('check.txt', result)
 
 
 if __name__ == '__main__':
