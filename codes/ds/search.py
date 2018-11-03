@@ -131,7 +131,7 @@ def _fib_search(value, arr, left, right, k):
     if left > right:
         return False
     elif left == right:
-        return value == arr[left]]
+        return value == arr[left]
 
     if value < arr[left]:
         return False
