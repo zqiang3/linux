@@ -3,7 +3,9 @@ import time
 MAX = 100000
 TEST_NUM = 10000
 
+
 def create_nums(filename, n):
+    """生成随机数，写到文件"""
     f = open(filename, 'w')
     for i in xrange(n):
         num = random.randint(0, MAX)
@@ -13,7 +15,19 @@ def create_nums(filename, n):
     f.close()
 
 
+
+def load_nums(filename):
+    """从文件载入数字"""
+    arr = []
+    f = open(filename, 'r')
+    for line in f:
+        arr.append(int(line))
+
+    return arr
+
+
 def find_it(arr, value):
+    """普通查找算法"""
     if not isinstance(arr, list):
         return False
 
@@ -23,9 +37,12 @@ def find_it(arr, value):
 
     return False
 
+
 def binary_search(arr, value):
+    """二分查找算法"""
     return _b_search(value, arr, 0, len(arr) - 1)
     pass
+
 
 def _b_search(value, arr, left, right):
     if left > right:
@@ -42,22 +59,15 @@ def _b_search(value, arr, left, right):
 
 
 
-def load_nums(filename):
-    arr = []
-    f = open(filename, 'r')
-    for line in f:
-        arr.append(int(line))
-
-    return arr
-
-
-
 def test_nornal_search(arr):
+    """测试普通查找算法"""
     for i in xrange(TEST_NUM):
         value = random.randint(0, MAX)
         result = find_it(arr, value)
 
+
 def test_binary_search(arr):
+    """测试二分查找算法"""
     arr.sort()
     for i in xrange(TEST_NUM):
         value = random.randint(0, MAX)
@@ -65,6 +75,7 @@ def test_binary_search(arr):
 
 
 def time_func(func, **args):
+    """测量时间"""
     t1 = time.time()
     func(**args)
     t2 = time.time()
