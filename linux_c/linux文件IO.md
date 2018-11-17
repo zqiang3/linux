@@ -1,10 +1,21 @@
-## puts
+## 示例
 
 ```c
-int puts(const char *str);
-```
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
 
-write string to stdout and appends a newline character（向标准输出写字符串，并添加一个换行符）
+char *filename = "foo.txt";
+int fd;
+fd = open(filename, O_RDONLY | O_CREAT, 0666);
+fd = open("temp.txt", O_RDONLY | O_CREAT | O_EXCL, 0666);  # 测试O_EXCL
+fd = open(filename, O_RDONLY | O_TRUNC, 0666);  # 测试O_TRUNC标志位
+if (fd < 0)
+{
+    perror("open");
+    exit(1);
+}
+```
 
 ## open
 
@@ -37,45 +48,51 @@ open 返回的文件描述符一定是最小的未被使用的描述符。
 
 创建文件时的权限会受到umask 值所影响, 因此该文件权限应该为 (mode-umaks).
 
+## read
+
+```c
+ssize_t read(int fd, void * buf, size_t count);
+```
+
+**说明**
+
+read()会把参数fd所指的文件传送count 个字节到buf 指针所指的内存中 
+
+**返回值**
+
+返回值为实际读取到的字节数, 如果返回0, 表示已到达文件尾或是无可读取的数据。若参数count 为0, 则read()不会有作用并返回0 
 
 
 
+## write
 
+```c
+ssize_t write (int fd, const void * buf, size_t count);
+```
 
+**说明**
 
+write()会把参数buf所指的内存写入count个字节到参数放到所指的文件内 
 
+**返回值**
 
+如果顺利write()会返回实际写入的字节数。当有错误发生时则返回-1，错误代码存入errno中 
 
+## 示例
 
+```c
+#include <stdio.h>
+#include <unistd.h>
+#define MAX 1000
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+int main(int argc, char *argv[])
+{
+    char buf[MAX];
+    int n;
+    while( (n = read(STDIN_FILENO, buf, MAX)) > 0)
+        write(STDOUT_FILENO, buf, n);     
+    
+    return 0;
+}
+```
 
