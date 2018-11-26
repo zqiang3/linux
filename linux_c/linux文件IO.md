@@ -10,6 +10,8 @@ int fd;
 fd = open(filename, O_RDONLY | O_CREAT, 0666);
 fd = open("temp.txt", O_RDONLY | O_CREAT | O_EXCL, 0666);  # 测试O_EXCL
 fd = open(filename, O_RDONLY | O_TRUNC, 0666);  # 测试O_TRUNC标志位
+ret = lseek(fd, 0, SEEK_END);
+status = truncate(filename, 30);
 if (fd < 0)
 {
     perror("open");
@@ -95,7 +97,19 @@ int main(int argc, char *argv[])
     return 0;
 }
 ```
+
+## lseek
+
+```c
+off_t lseek(int fd, off_t pos, int origin);
+SEEK_CUR
+SEEK_END
+SEEK_SET // 将文件设成pos的值
+```
+
 ## truncate
+
 ```c
 int truncate(const char *path, off_t len);
 ```
+
