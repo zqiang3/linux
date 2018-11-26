@@ -95,4 +95,7 @@ int main(int argc, char *argv[])
     return 0;
 }
 ```
-
+## truncate
+```c
+int truncate(const char *path, off_t len);
+```
