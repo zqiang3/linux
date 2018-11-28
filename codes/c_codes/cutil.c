@@ -8,6 +8,7 @@ char * itobs(int n, char *ps)
         ps[i] = (01 & n) + '0';
 
     ps[size] = '\0';
+    showbnum(ps);
     return ps;
 }
 
