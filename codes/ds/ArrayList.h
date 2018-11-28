@@ -19,5 +19,5 @@ bool IsListFull(ArrayList*);
 void AppendList(ArrayList* L, ElemType value);
 ElemType PopList(ArrayList* L);
 int ListLength(ArrayList* L);
-void printListLength(ArrayList* L);
+void printArrayList(ArrayList* L);
 void InsertList(ArrayList *L, int index, ElemType value);

@@ -111,14 +111,14 @@ int ListLength(ArrayList* L)
 }
 
 // 打印线性表
-void printListLength(ArrayList* L)
+void printArrayList(ArrayList* L)
 {
-    printf("########\n");
+    puts("");
     printf("length=%d\n", ListLength(L));
     int i;
     for(i=0; i < L->length; i++)
     {
         printf("L[%d] = %d\n", i, *(L->head + i));
     }
-    printf("########\n\n");
+    printf("--------------------------\n\n");
 }

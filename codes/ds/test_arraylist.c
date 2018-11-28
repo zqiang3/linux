@@ -37,35 +37,35 @@ int main(int argc, char** argv)
 
     println("append 0");
     AppendList(L, 0);
-    printListLength(L);
+    printArrayList(L);
 
     println("append 1");
     AppendList(L, 1);
-    printListLength(L);
+    printArrayList(L);
     
     println("append 2");
     AppendList(L, 2);
-    printListLength(L);
+    printArrayList(L);
 
     println("pop");
     ElemType value = PopList(L);
-    printListLength(L);
+    printArrayList(L);
 
     println("pop");
     value = PopList(L);
-    printListLength(L);
+    printArrayList(L);
 
     println("insert index: 0, value: 10");
     InsertList(L, 0, 10);
-    printListLength(L);
+    printArrayList(L);
 
     println("insert index: 1, value: 11");
     InsertList(L, 1, 11);
-    printListLength(L);
+    printArrayList(L);
 
     println("insert index: 1, value: 12");
     InsertList(L, 1, 12);
-    printListLength(L);
+    printArrayList(L);
 
 
     return 0;
