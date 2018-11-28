@@ -1,3 +1,7 @@
+#ifndef _ARRAYLIST_H
+    #define _ARRAYLIST_H
+#endif
+
 #include <stdbool.h>
 
 typedef int ElemType;
