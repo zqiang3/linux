@@ -17,9 +17,23 @@ int main(int argc, char** argv)
     }
 
     int len = atoi(argv[1]);
-    println("init ArrayList");
+    println("try init ArrayList");
     ArrayList *L = MakeArrayList();
-    InitList(L, len);
+    if(!L)
+    {
+        println("MakeArrayList failed!");
+        exit(1);
+    }
+
+    // L = NULL;
+    // len = 0;
+    bool flag;
+    flag = InitList(L, len);
+    if(!flag)
+    {
+        println("InitList failed!");
+        exit(1);
+    }
 
     println("append 0");
     AppendList(L, 0);

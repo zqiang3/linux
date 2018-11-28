@@ -13,7 +13,7 @@ typedef struct
 } ArrayList;
 
 ArrayList* MakeArrayList(void);
-void InitList(ArrayList *L, int size);
+bool InitList(ArrayList *L, int size);
 bool IsListEmpty(ArrayList*);
 bool IsListFull(ArrayList*);
 void AppendList(ArrayList* L, ElemType value);

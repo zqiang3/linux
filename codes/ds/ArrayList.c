@@ -1,21 +1,39 @@
 #include "ArrayList.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 
 
 ArrayList* MakeArrayList(void)
 {
     ArrayList *L = (ArrayList*)malloc(sizeof(ArrayList));
+    if(L == NULL)
+    {
+        perror("malloc");
+    }
     return L;
 }
 
 
 // 初始化
-void InitList(ArrayList *L, int size)
+bool InitList(ArrayList *L, int size)
 {
+    if(L == NULL || size <= 0)
+    {
+        puts("List is NULL or size <= 0!");
+        return false;
+    }
+    
     L->head = (ElemType *)malloc(size * sizeof(ElemType));
+    if(!L->head)
+    {
+        perror("malloc");
+        return false;
+    }
+
     L->size= size;
     L->length= 0;
+    return true;
 }
 
 // 末尾添加
