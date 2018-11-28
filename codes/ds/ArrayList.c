@@ -39,6 +39,7 @@ bool InitList(ArrayList *L, int size)
 // 末尾添加
 void AppendList(ArrayList* L, ElemType value)
 {
+    assert(L != NULL);
     if(IsListFull(L))
     {
         puts("warning: excess max size");
@@ -52,6 +53,7 @@ void AppendList(ArrayList* L, ElemType value)
 
 bool IsListFull(ArrayList *L)
 {
+    assert(L != NULL);
     if(L->length >= L->size)
         return true;
     else
@@ -60,6 +62,7 @@ bool IsListFull(ArrayList *L)
 
 bool IsListEmpty(ArrayList *L)
 {
+    assert(L != NULL);
     if(L->length <= 0)
         return true;
     else
@@ -69,6 +72,7 @@ bool IsListEmpty(ArrayList *L)
 // 删除最后一个元素
 ElemType PopList(ArrayList* L)
 {
+    assert(L != NULL);
     if(IsListEmpty(L))
     {
         puts("warning: list is empty!");
@@ -83,6 +87,7 @@ ElemType PopList(ArrayList* L)
 // 在指定位置插入值
 void InsertList(ArrayList *L, int index, ElemType value)
 {
+    assert(L != NULL);
     if(IsListFull(L))
     {
         puts("warning: list is full!");
@@ -107,12 +112,14 @@ void InsertList(ArrayList *L, int index, ElemType value)
 // 获取线性表长度
 int ListLength(ArrayList* L)
 {
+    assert(L != NULL);
     return L->length;
 }
 
 // 打印线性表
 void printArrayList(ArrayList* L)
 {
+    assert(L != NULL);
     puts("");
     printf("length=%d\n", ListLength(L));
     int i;
