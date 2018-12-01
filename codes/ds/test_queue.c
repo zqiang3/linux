@@ -1,4 +1,4 @@
-#include "queue.h"
+#include "array_queue.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -18,7 +18,7 @@ int main(int argc, char** argv)
 {
 
     println("try init Queue");
-    Queue *q = MakeQueue();
+    Queue *q = MakeQueue(5);
     if(!q)
     {
         puts("MakeQueue failed");
