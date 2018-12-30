@@ -6,16 +6,19 @@
 
 **原型**：
 
-int execl(const char *path, const char *arg, ...);
+```c
+#include <unistd.h>
 
-int execlp(const char *file, const char *arg, ...);
-
-int execle(const char *path, const char *arg, ..., char * const envp[]);
-
+int execl(const char *path, const char *arg0, ... /* (char *)0 */ );
 int execv(const char *path, char *const argv[]);
+int execle(const char *path, const char *arg, ... /* (char *)0, char *const envp[] */ );
 
+int execlp(const char *file, const char *arg0, ... /* (char *)0 */ );
 int execvp(const char *file, char *const argv[]);
+int execve(const char *file, char *const argv[], char *const envp[]);
+// All six return -1 on error, no return on success
+```
 
-**返回值**：成功返回0,失败返回-1 
+**返回值**：
 
 注：exec系列函数底层都是通过execve系统调用实现 
