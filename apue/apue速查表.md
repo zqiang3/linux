@@ -18,3 +18,12 @@ void *realloc(void *ptr, size_t newsize);
 void free(void *ptr);
 ```
 
+## wait
+
+```c
+#include <sys/wait.h>
+pid_t wait(int *statloc);
+pid_t waitpid(pid_t pid, int *statloc, int options);
+// Returns: pid or 0 if OK, -1 on error
+```
+
