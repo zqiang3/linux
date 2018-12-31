@@ -18,6 +18,8 @@ void *realloc(void *ptr, size_t newsize);
 void free(void *ptr);
 ```
 
+## wait
+
 ```c
 #include <sys/wait.h>
 pid_t wait(int *statloc);
@@ -40,5 +42,6 @@ int raise(int signo);
 unsigned int alarm(unsigned int sec);
 // Returns: 0 or number of seconds until previously set alarm
 int pause(void);  // Returns: -1 with errno set to EINTR
+// Returns: pid or 0 if OK, -1 on error
 ```
 

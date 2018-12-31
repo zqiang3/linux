@@ -4,6 +4,46 @@ https://www.cnblogs.com/liuwanpeng/p/6246050.html
 
 https://blog.csdn.net/qq_29350001/article/details/65437279
 
+## 速查表
+
+```c
+#include <fcntl.h>
+int open(const char *pathname, int oflag, ... /* mode_t mode */ );
+// Returns: fd id OK, -1 on error
+
+#include <unistd.h>
+int close(int fields);
+// Returns: 0 if OK, -1 on error
+off_t lseek(int fd, off_t offset, int whence);
+// whence: SEEK_SET, SEEK_CUR, SEEK_END
+// Returns: new offset if OK, -1 on error
+
+ssize_t read(int fd, void *buf, size_t nbytes);
+// Returns: bytes read if OK, 0 if EOF, -1 on error
+ssize_t write(int fd, const void *buf, size_t nbytes);
+// Returns: bytes written if OK, -1 on error
+
+// 原子操作
+ssize_t pread(int fd, void *buf, size_t nbytes, off_t offset);
+// Returns: bytes read if OK, 0 if EOF, -1 on error
+ssize_t pwrite(int fd, void *buf, size_t nbytes, off_t offset);
+// Returns: bytes written if OK, -1 on error
+
+int dup(int fd);
+int dup2(int fd, int fd2);
+// Returns: new fd if OK, -1 on error
+
+int fsync(int fd);
+int fdatasync(int fd);
+// Returns: 0 if OK, -1 on error
+void syn(void);
+
+int fcntl(int fd, int cmd, ... /* int arg */ );
+// Returns: 若成功依赖于cmd， －1 on error
+```
+
+
+
 ## 引言
 
 几个I/O函数：open, read, write, lseek和close，这些函数不带缓冲，是对内核的系统调用。
@@ -84,6 +124,14 @@ v-node是与文件系统无关的，所以单独提出来。linux里没有v-node
 
 ## fcntl
 
+F_DUPFD： 复制文件描述符
+
+F_GETFD: 文件描述符标志
+
+F_SETFD: 设置文件描述符标志
+
+F_SETFL: 设置文件状态标志
+
 代码见test_fcntl.c
 
 ```bash
@@ -95,3 +143,10 @@ v-node是与文件系统无关的，所以单独提出来。linux里没有v-node
 ./a.out 5 5<temp   # 在文件描述符5上打开文件， >是可读
 ```
 
+## sync, fsync和fdatasync
+
+sync只是将所有修改过的块缓冲区排入写队列，然后返回，并不等待实际写磁盘操作结束。
+
+fsync对fd的单一文件起作用，并且等待写磁盘操作结束，然后返回
+
+fdatasync类似于fsync，但只影响文件的数据部分，而fsync还会同步更新文件的属性。
