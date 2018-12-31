@@ -86,7 +86,7 @@ v-node是与文件系统无关的，所以单独提出来。linux里没有v-node
 
 代码见test_fcntl.c
 
-```
+```bash
 ./a.out 0 < /dev/tty
 ./a.out 1 > temp
 ./a.out 1 >> temp  # 追加重定向
