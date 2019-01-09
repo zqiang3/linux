@@ -66,9 +66,18 @@ pid_t waitpid(pid_t pid, int *statloc, int options);
 
 ```c
 #include <pthread.h>
-int pthread_create(pthread_t *restrict tidp, const pthread_attr_t *restrict attr, void *(*start_rin)(void *), void *restrict arg);  // Returns: 0 if OK, error number on failure
+
 pthread_t pthread_self(void);  // Returns: the thread ID of the calling thread
 int pthread_equal(pthread_t tid1, pthread_t pid2);
+
+int pthread_create(pthread_t *restrict tidp, const pthread_attr_t *restrict attr, void *(*start_rin)(void *), void *restrict arg);  
+void pthread_exit(void *rval_ptr);
+int pthread_join(pthread_t thread, void **rval_ptr);  
+int pthread_cancel(pthread_t tid);
+// Return: 0 if OK, error number on failure
+
+void pthread_cleanup_push(void (*rtn)(void *), void *arg);
+void pthread_cleanup_pop(int execute);
 
 int pthread_mutex_init(pthread_mutex_t *restrict mutex, const pthread_mutexattr_t *restrict attr);
 int pthread_mutex_destroy(pthread_mutex_t *mutex);
