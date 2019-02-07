@@ -19,6 +19,7 @@ void AppendList(LinkList* L, ElemType value);
 ElemType PopList(LinkList *L);
 void InsertList(LinkList *L, int index, ElemType value);
 void printList(LinkList* L);
+ElemType * index(LinkList *L, int i);
 
 
 int main(int argc, char** argv)
@@ -46,6 +47,9 @@ int main(int argc, char** argv)
     printList(L);
     InsertList(L, 5, 22);
     printList(L);
+
+    ElemType *e = index(L, 2);
+    printf("*e = %d\n", *e);
 
 
 }
@@ -183,4 +187,18 @@ void printList(LinkList* L)
         printf("index: %d, value=%d\n", count-1, p->value);
     }
     printf("########\n\n");
+}
+
+
+ElemType * index(LinkList *L, int i)
+{
+    Node *cur = L->head->next;
+    int count = -1;
+    while (cur && ++count != i)
+        cur = cur->next;
+
+    if (cur && count == i)
+        return &(cur->value);
+    else
+        return NULL;
 }

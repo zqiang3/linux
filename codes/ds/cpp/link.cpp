@@ -1,7 +1,43 @@
-#include "link.h"
+#include "link2.h"
+#include <cmath>
 using namespace std;
 
-Node::Node(int v, Node *next)
+
+ostream & operator<<(ostream &os, Value &v)
+{
+    os << v.f;
+    return os;
+    
+}
+
+Value::Value(float v)
+{
+    f = v;
+}
+
+bool Value::operator==(Value &o)
+{
+    if ( abs(this->f - o.f) < 0.000001)
+        return true;
+    else
+        return false;
+}
+
+Value Value::operator+(Value &o)
+{
+    Value *r = new Value;
+    r->f = this->f + o.f;
+    return *r;
+}
+
+Node::Node()
+{
+    value = Value(0);
+    next = NULL;
+    
+}
+
+Node::Node(Value v, Node *next)
 {
     value = v;
     next = next;
@@ -13,7 +49,7 @@ LinkList::LinkList()
     head = new Node;
 }
 
-LinkList::LinkList(int arr[], int count)
+LinkList::LinkList(Value arr[], int count)
 {
     len = 0;
     head = new Node;
@@ -31,7 +67,7 @@ bool LinkList::isEmpty() const
     return len == 0;
 }
 
-void LinkList::append(int v)
+void LinkList::append(Value v)
 {
     Node *cur = head;
     while(cur->next != NULL)
@@ -55,7 +91,7 @@ void LinkList::show() const
     cout << "\b\b]\n";
 }
 
-void LinkList::insert(int i, int v)
+void LinkList::insert(int i, Value v)
 {
     if (i >= len)
         return;
@@ -78,7 +114,7 @@ void LinkList::insert(int i, int v)
     
 }
 
-int LinkList::pop()
+Value LinkList::pop()
 {
     if (isEmpty())
         return 0;
@@ -91,7 +127,7 @@ int LinkList::pop()
         cur = cur->next;
     }
 
-    int temp = cur->value;
+    Value temp = cur->value;
     pre->next = NULL;
     delete cur;
     len--;
@@ -99,7 +135,7 @@ int LinkList::pop()
     return temp;
 }
 
-bool LinkList::find(int v)
+bool LinkList::find(Value v)
 {
     Node *cur = head->next;
     while(cur)
@@ -111,7 +147,7 @@ bool LinkList::find(int v)
     return false;
 }
 
-bool LinkList::remove(int v)
+bool LinkList::remove(Value v)
 {
     Node *pre = head;
     Node *cur = head->next;
@@ -135,12 +171,12 @@ bool LinkList::remove(int v)
     }
 }
 
-int& LinkList::operator[](int i)
+Value& LinkList::operator[](int i)
 {
     if (i >= len)
     {
-        int *temp = new int;
-        return *temp;
+        Value *v = new Value;
+        return *v;
     }
 
     int count = 0;
@@ -157,7 +193,7 @@ LinkList& LinkList::operator+(LinkList &o)
     LinkList *r = new LinkList();
     Node *cur = head->next;
     Node *ocur = o.head->next;
-    int temp;
+    Value temp;
     while(cur || ocur)
     {
         temp = 0;

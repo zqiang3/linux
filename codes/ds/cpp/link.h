@@ -1,13 +1,25 @@
 #include <iostream>
 using namespace std;
 
+class Value
+{
+public:
+    float f;
+    Value(float v=0);
+    friend ostream & operator<<(ostream &o, Value &v);
+    bool operator==(Value &o);
+    Value operator+(Value &o);
+    
+};
+
 
 class Node
 {
 public:
-    int value;
+    Value value;
     Node *next;
-    Node(int v = 0, Node *next = NULL);
+    Node();
+    Node(Value v, Node *next = NULL);
 };
 
 class LinkList
@@ -17,15 +29,15 @@ private:
     Node *head;
 public:
     LinkList();
-    LinkList(int arr[], int count);
+    LinkList(Value arr[], int count);
     int length() const;
     bool isEmpty() const;
-    void append(int v);
-    void insert(int i, int v);
-    int pop();
+    void append(Value v);
+    void insert(int i, Value v);
+    Value pop();
     void show() const;
-    bool find(int v);
-    bool remove(int v);
-    int & operator[](int i);
+    bool find(Value v);
+    bool remove(Value v);
+    Value & operator[](int i);
     LinkList& operator+(LinkList&);
 };
