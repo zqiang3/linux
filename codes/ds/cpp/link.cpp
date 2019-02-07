@@ -13,6 +13,14 @@ LinkList::LinkList()
     head = new Node;
 }
 
+LinkList::LinkList(int arr[], int count)
+{
+    len = 0;
+    head = new Node;
+    for (int i = 0; i < count; i++)
+        append(arr[i]);
+}
+
 int LinkList::length() const
 {
     return len;
@@ -38,12 +46,13 @@ void LinkList::show() const
 {
     cout << "len = " << len << endl;
     Node *cur = head->next;
+    cout << "[";
     while(cur)
     {
         cout << cur->value << ", ";
         cur = cur->next;
     }
-    cout << endl;
+    cout << "\b\b]\n";
 }
 
 void LinkList::insert(int i, int v)
@@ -124,4 +133,49 @@ bool LinkList::remove(int v)
         len--;
         return true;
     }
+}
+
+int& LinkList::operator[](int i)
+{
+    if (i >= len)
+    {
+        int *temp = new int;
+        return *temp;
+    }
+
+    int count = 0;
+    Node *cur = head->next;
+    while(count++ != i)
+        cur = cur->next;
+
+    return cur->value;
+}
+
+
+LinkList& LinkList::operator+(LinkList &o)
+{
+    LinkList *r = new LinkList();
+    Node *cur = head->next;
+    Node *ocur = o.head->next;
+    int temp;
+    while(cur || ocur)
+    {
+        temp = 0;
+        if (cur && ocur)
+            temp = cur->value + ocur->value;
+        else if (cur)
+            temp = cur->value;
+        else if (ocur)
+            temp = ocur->value;
+        else
+            ;
+
+        r->append(temp);
+        if (cur)
+            cur = cur->next;
+        if (ocur)
+            ocur = ocur->next;
+    }
+
+    return *r;
 }

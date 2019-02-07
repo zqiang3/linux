@@ -17,6 +17,7 @@ private:
     Node *head;
 public:
     LinkList();
+    LinkList(int arr[], int count);
     int length() const;
     bool isEmpty() const;
     void append(int v);
@@ -25,4 +26,6 @@ public:
     void show() const;
     bool find(int v);
     bool remove(int v);
+    int & operator[](int i);
+    LinkList& operator+(LinkList&);
 };
