@@ -7,8 +7,8 @@
 class Value(object):
 
     def __init__(self, coe=0, exp=0):
-        self.coe = coe
-        self.exp = exp
+        self.coe = coe  # 系数
+        self.exp = exp  # 因数
 
     def __str__(self):
         return '(%s, %s)' % (self.coe, self.exp)
@@ -20,11 +20,9 @@ class Value(object):
 
 class Node(object):
 
-    value = Value()
-    next = None
-
-    def __init__(self, value):
+    def __init__(self, value=Value()):
         self.value = value
+        self.next = None
     
 
 class LinkList(object):
