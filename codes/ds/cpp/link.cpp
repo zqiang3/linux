@@ -1,23 +1,32 @@
-#include "link2.h"
+#include "link.h"
 #include <cmath>
 using namespace std;
 
 
 ostream & operator<<(ostream &os, Value &v)
 {
-    os << v.f;
+    os << v.coe << "*x^" << v.exp;
     return os;
     
 }
 
-Value::Value(float v)
+Value::Value(double d, int i)
 {
-    f = v;
+    coe = d;
+    exp = i;
+}
+
+Value::Value()
+{
+    coe = 0;
+    exp = 0;
 }
 
 bool Value::operator==(Value &o)
 {
-    if ( abs(this->f - o.f) < 0.000001)
+    if (this->exp != o.exp)
+        return false;
+    if ( abs(this->coe - o.coe) < 0.000001)
         return true;
     else
         return false;
@@ -26,13 +35,14 @@ bool Value::operator==(Value &o)
 Value Value::operator+(Value &o)
 {
     Value *r = new Value;
-    r->f = this->f + o.f;
+    r->coe = this->coe + o.coe;
+    r->exp = this->exp + o.exp;
     return *r;
 }
 
 Node::Node()
 {
-    value = Value(0);
+    value = Value(0, 0);
     next = NULL;
     
 }
@@ -117,7 +127,7 @@ void LinkList::insert(int i, Value v)
 Value LinkList::pop()
 {
     if (isEmpty())
-        return 0;
+        return Value(0, 0);
 
     Node *pre = head;
     Node *cur = head->next;
@@ -196,7 +206,7 @@ LinkList& LinkList::operator+(LinkList &o)
     Value temp;
     while(cur || ocur)
     {
-        temp = 0;
+        temp = Value();
         if (cur && ocur)
             temp = cur->value + ocur->value;
         else if (cur)

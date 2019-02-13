@@ -4,8 +4,10 @@ using namespace std;
 class Value
 {
 public:
-    float f;
-    Value(float v=0);
+    double coe;
+    int exp;
+    Value(double d, int i);
+    Value();
     friend ostream & operator<<(ostream &o, Value &v);
     bool operator==(Value &o);
     Value operator+(Value &o);
