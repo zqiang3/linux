@@ -1,69 +1,186 @@
-#include "linklist.h"
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
-List* GenAndInitList()
+typedef int ElemType;
+typedef struct Node
 {
-    List *list = (List*)malloc(sizeof(List));
-    if(!list)
-    {
-        perror("malloc List");
-        return NULL;
-    }
-    Node *root = (Node*)malloc(sizeof(Node));
-    if(!root)
-    {
-        perror("malloc Node");
-        return NULL;
-    }
-    else
-    {
-        root->fwd = NULL;
-        root->bwd = NULL;
-    }
+    ElemType value;
+    struct Node *next;
+}Node;
 
-    list->root = root;
-    return list;
+typedef struct
+{
+    Node *head;
+}LinkList;
+
+LinkList* InitList();
+ElemType GetElement(LinkList* L, int index);
+void AppendList(LinkList* L, ElemType value);
+ElemType PopList(LinkList *L);
+void InsertList(LinkList *L, int index, ElemType value);
+void printList(LinkList* L);
+
+
+int main(int argc, char** argv)
+{
+    ElemType value;
+
+    LinkList *L = InitList();
+    value = PopList(L);
+
+    AppendList(L, 3);
+    printList(L);
+
+    AppendList(L, 5);
+    printList(L);
+
+    value = GetElement(L, 0);
+    printf("value=%d\n", value);
+    value = GetElement(L, 1);
+    printf("value=%d\n", value);
+
+    printf("\n");
+    InsertList(L, 0, 11);
+    printList(L);
+    InsertList(L, 3, 22);
+    printList(L);
+    InsertList(L, 5, 22);
+    printList(L);
+
+
 }
 
-bool OrderedInsert(List *list, Item item, int(*comp)(void* a, void *b))
+// 初始化
+LinkList* InitList()
 {
-    Node *root = list->root;
+    LinkList *L = (LinkList*)malloc(sizeof(LinkList));
 
-    Node *pre = root;
-    Node *cur = root->fwd;
-    while(cur && comp(&cur->item, &item) < 0)
-    {
-        pre = cur;
-        cur = cur->fwd;
-    }
-    Node *newnode = (Node *)malloc(sizeof(Node));
-    newnode->item = item;
-
-    pre->fwd = newnode;
-    newnode->bwd = pre;
-    newnode->fwd = cur;
-    if(cur != NULL)
-    {
-        cur->bwd = newnode;
-    }
-    else
-    {
-        root->bwd = newnode;
-    }
-
-    
-    return true;
+    Node *newNode = (Node *)malloc(sizeof(Node));
+    newNode->value = 0;
+    newNode->next = NULL;
+    L->head = newNode;
+    return L;
 }
 
-void printList(List *list, void (*print)(void *))
+ElemType GetElement(LinkList* L, int index)
 {
-
-    Node *cur = list->root->fwd;
-    while(cur)
+    if(index < 0)
     {
-        print(&cur->item);
-        cur = cur->fwd;
+        printf("warning: index less than 0\n");
+        return 0;
     }
-    printf("---------------------------------\n\n");
+
+    int count = 0;
+    Node *p = L->head;
+    int i = 0;
+
+    int found = 1;
+    for(i = 0; i <= index; i++)
+    {
+        if(p->next == NULL)
+        {
+            found = 0;
+            printf("warning: index out of range\n");
+            break;
+        }
+        p = p->next;
+    }
+
+    if(!found)
+        return 0;
+    else
+        return p->value;
+}
+
+// 末尾添加数据
+void AppendList(LinkList* L, ElemType value)
+{
+    Node *p = L->head;
+    while(p->next != NULL)
+        p = p->next;
+    Node *newNode = (Node *)malloc(sizeof(Node));
+    newNode->value = value;
+    newNode->next = NULL;
+    p->next = newNode;
+}
+
+ElemType PopList(LinkList *L)
+{
+    if(L->head->next == NULL)
+    {
+        printf("warning: no value to pop\n");
+        return 0;
+    }
+
+    Node *pre = L->head;
+    Node *p = pre->next;
+    while(p->next != NULL)
+    {
+        pre = p;
+        p = p->next;
+    }
+    pre->next = NULL;
+    return p->value;
+}
+
+void InsertList(LinkList *L, int index, ElemType value)
+{
+    int len = getLength(L);
+    if(index < 0 || index > len)
+    {
+        printf("warning: index out of range\n");
+        return;
+    }
+
+    if(index == len)
+    {
+        AppendList(L, value);
+        return;
+    }
+
+    Node *p = L->head;
+    int count = 0;
+
+    while(p->next != NULL)
+    {
+        if(count == index)
+        {
+            Node *next = p->next;
+            Node* new = (Node*)malloc(sizeof(Node));
+            new->value = value;
+            p->next = new;
+            new->next = next;
+
+        }
+        p = p->next;
+        count++;
+    }
+}
+
+// 获取链表长度
+int getLength(LinkList* L)
+{
+    Node *p = L->head;
+    int count = 0;
+    while(p->next != NULL)
+    {
+        count++;
+        p = p->next;
+    }
+    return count;
+}
+
+// 打印链表内容
+void printList(LinkList* L)
+{
+    Node *p = L->head;
+    int count = 0;
+    printf("########\n");
+    while(p->next != NULL)
+    {
+        count++;
+        p = p->next;
+        printf("index: %d, value=%d\n", count-1, p->value);
+    }
+    printf("########\n\n");
 }
