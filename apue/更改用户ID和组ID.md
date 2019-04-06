@@ -1,3 +1,7 @@
+实际用户ID：登录用户的uid
+
+有效用户ID：进程根据有效用户ID决定对资源的访问权限。一般情况下，有效用户ID等于实际用户ID，当set-user-id位设置时，有效用户ID等于文件所有者的uid，而不是实际用户ID。
+
 ```c
 #include <unistd.h>
 int setuid(uid_t uid);

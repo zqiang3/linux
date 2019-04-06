@@ -56,10 +56,6 @@ void *realloc(void *ptr, size_t newsize);
 // All three return: pointer if OK, NULL on error
 void free(void *ptr);
 
-#include <sys/wait.h>
-pid_t wait(int *statloc);
-pid_t waitpid(pid_t pid, int *statloc, int options);
-// Both return: process ID if OK, 0, or -1 on error
 ```
 
 ## 线程
