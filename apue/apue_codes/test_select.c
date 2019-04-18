@@ -1,54 +1,46 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include "apue.h"
 #include <sys/time.h>
-#include <unistd.h>
-
-#define TIMEOUT 5
-#define BUF_LEN 1024
+#define BUFSIZE 1024 
 
 int main(void)
 {
+    fd_set readset;
+    int fd = STDIN_FILENO;
+
     struct timeval tv;
-    fd_set readfds;
-    int ret;
 
-    FD_ZERO(&readfds);
-    FD_SET(STDIN_FILENO, &readfds);
+    int retval;
+    int isset;
+    char buf[BUFSIZE];
+    int nread;
 
-    tv.tv_sec = TIMEOUT;
-    tv.tv_usec = 0;
-
-    ret = select(STDIN_FILENO + 1, &readfds, NULL, NULL, &tv);
-    if (ret == -1)
+    int loops = 0;
+    while (1)
     {
-        perror("select");
-        exit(1);
-    }
-    else if (!ret)
-    {
-        printf("%d second elapsed.\n", TIMEOUT);
-        exit(1);
-    }
+        loops++;
+        printf("loops = %d\n", loops);
+        FD_ZERO(&readset);
+        FD_SET(fd, &readset);
 
-    if (FD_ISSET(STDIN_FILENO, &readfds))
-    {
-        char buf[BUF_LEN + 1];
-        int len;
-        len = read(STDIN_FILENO, buf, BUF_LEN);
-        if (len == -1)
+        memset(&tv, 0, sizeof(tv));
+        tv.tv_sec = 1;
+        retval = select(fd + 1, &readset, NULL, NULL, &tv);
+        if (retval < 0)
+            err_sys("select");
+        else if (retval == 0)
+            puts("select timeout");
+        else if (FD_ISSET(fd, &readset))
         {
-            perror("read");
-            exit(1);
+            memset(buf, 0, sizeof(buf));
+            nread = read(fd, buf, BUFSIZE);
+            if (nread > 0)
+                puts(buf);
+            else if (nread == 0)
+                break;
+            else
+                perror("read");
         }
-
-        if (len)
-        {
-            buf[len] = '\0';
-            printf("read: %s\n", buf);
-        }
-        exit(0);
     }
 
-    fprintf(stderr, "This should not happen!\n");
-    return 1;
+    return 0;
 }
