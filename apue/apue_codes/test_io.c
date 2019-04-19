@@ -11,7 +11,7 @@ int main(void)
     if (fd == -1)
         err_sys("open");
     else
-        printf("fd = %d\n", fd);
+        printf("Open success. fd = %d\n", fd);
 
     int ret;
     ret = close(fd);
@@ -23,6 +23,8 @@ int main(void)
     ret = lseek(STDIN_FILENO, 0, SEEK_SET);
     if (ret == -1)
         err_sys("fseek");
+    else
+        puts("lseek OK");
 
     return 0;
 }
