@@ -33,6 +33,29 @@ int fchdir(int fd);
 // 0 if OK, -1 on error
 ```
 
+```c
+#include <fcntl.h>
+int fcntl(int filedes, int cmd, ... /* struct flock *flockptr */);  // 出错返回-1
+```
+
+### struct flock
+
+```c
+struct flock {
+    short l_type;  /* F_RDLCK, F_WRLCK, or F_UNLCK */
+    off_t l_start;
+    short l_whence;
+    off_t l_len;
+    pid_t l_pid;
+};
+```
+
+| 当前区域状态   | 读锁 | 写锁 |
+| -------------- | ---- | ---- |
+| 无锁           | 允许 | 允许 |
+| 一个或多个读锁 | 允许 | 拒绝 |
+| 一个写锁       | 拒绝 | 拒绝 |
+
 
 
 
