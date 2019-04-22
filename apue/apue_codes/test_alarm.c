@@ -1,28 +1,19 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include "apue.h"
 #include <signal.h>
-static void sig_alarm(int signo);
 
-unsigned int
-sleep1(unsigned int sec)
+void sig_alarm(int signo)
+{
+    puts("received SIG_ALARM");
+}
+
+int main()
 {
     if (signal(SIGALRM, sig_alarm) == SIG_ERR)
-        return (sec);
+        err_sys("signal");
 
-    alarm(sec);
+    unsigned int sec;
+    sec = alarm(10);
     pause();
-    return alarm(0);
-}
-
-static void
-sig_alarm(int signo)
-{
-    
-}
-
-int main(void)
-{
-    int a = 5;
-    sleep1(5);
-    printf("hello, 2019\n");
+    puts("main exit");
+    exit(0);
 }
