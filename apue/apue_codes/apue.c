@@ -1,5 +1,4 @@
-#include <stdlib.h>
-
+#include "apue.h"
 void err_sys(const char* msg)
 {
     perror(msg);
