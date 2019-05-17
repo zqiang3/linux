@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <errno.h>
 
 int main(void)
 {
@@ -22,8 +23,11 @@ int main(void)
     else if (newpid == 0)  // child
     {
         close(fd[1]);  // close write fd
-        int len = read(fd[0], buf, sizeof(buf));
-        write(STDOUT_FILENO, buf, len);
+        errno = 0;
+        ssize_t len;
+        while ((len = read(fd[0], buf, sizeof(buf))) > 0)
+            write(STDOUT_FILENO, buf, len);
+            
         close(fd[0]);  // need to close fd manually
     }
     else  // parent

@@ -6,6 +6,13 @@ void err_sys(const char* msg)
     exit(1);
 }
 
+void Close(int fd)
+{
+    int ret = close(fd);
+    if(ret < 0)
+        err_sys("close");
+}
+
 ssize_t readline(int fd, char *ptr, size_t n)
 {
     
