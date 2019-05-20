@@ -140,5 +140,70 @@ int sigpending(sigset_t *set);
 ```c
 int sigaction(int signo, const struct sigaction *restrict act, struct sigaction *restrict oact);
 // 成功返回0，出错返回-1
+
+struct sigaction {
+    void (*sa_handler)(int);
+    sigset_t sa_mask;
+    int sa_flags;
+    void (*sa_sigaction)(int, siginfo_t *, void *);
+};
 ```
 
+sa_handler字段包含了一个信号捕捉函数的地址
+
+sa_mask字段说明了一个信号集，这一信号集添加到信号屏蔽字中。从信号捕捉函数返回时再将进程的信号屏蔽字恢复。在信号处理程序被调用时，操作系统建立的新信号屏蔽字包括正被递送的信号。
+
+
+
+进入信号处理函数后，系统自动将当前信号加入到信号屏蔽字，避免被同一信号中断。
+
+可使用sigaction，将想要屏蔽的信号加入到屏蔽信号集，这样，在处理函数中就不会被这些信号中断。从信号处理函数返回后，系统再将这些信号从屏蔽信号集中去除。
+
+## sigsuspend
+
+```c
+int sigsuspend(const sigset_t *mask);
+// sigsuspend() always returns -1, with errno set to indicate the error(normally, EINTR).
+```
+
+sigsuspend()临时用mask代替调用线程的信号屏蔽集，然后将线程挂起，直到有信号投递（信号的动作是触发一个信号处理程序或者是终止进程）。
+
+```
+sigsuspend() temporarily replaces the signal mask of the calling
+       thread with the mask given by mask and then suspends the thread until
+       delivery of a signal whose action is to invoke a signal handler or to
+       terminate a process.
+
+If the signal terminates the process, then sigsuspend() does not
+       return.  If the signal is caught, then sigsuspend() returns after the
+       signal handler returns, and the signal mask is restored to the state
+       before the call to sigsuspend().
+
+It is not possible to block SIGKILL or SIGSTOP; specifying these
+       signals in mask, has no effect on the thread's signal mask.
+```
+
+## abort
+
+```c
+#include <stdlib.h>
+void abort(void);  // 无返回值
+```
+
+APUE: 进程可以捕捉SIGABRT，可在进程终止前由其执行必要的清理操作。如果在信号处理程序中进程并未终止自己，则当信号处理程序返回时，abort终止该进程。
+
+
+
+**abort 函数首先解除进程对 SIGABRT 信号的阻止，然后向调用进程发送该信号。**abort 函数会导致进程的异常终止除非 SIGABRT 信号被捕捉并且信号处理句柄没有返回。
+
+**如果 abort 函数导致进程终止，则所有打开的流都将关闭并刷新。**
+
+如果SIGABRT信号被忽略，或被返回的处理程序捕获，则abort（）函数仍将终止进程。 它通过恢复 SIGABRT 的默认配置，然后再次发送信号来做到这一点。
+
+**函数实现**
+
+
+
+**函数实现解析**
+
+首先看是否将执行默认动作，若是则冲洗所有标准 I/O 流。这并不等价于对所有打开的流调用 fclose （因为只冲洗，并不关闭它们），但是当进程终止时，系统会关闭所有打开的文件。如果进程捕捉此信号并返回，那么因为进程可能产生了更多的输出，所以再一次冲洗所有的流。不进行冲洗处理的唯一条件是如果进程捕捉此信号，然后调用 _exit 或 _Exit。这种情况下，任何未冲洗的内存中的标准 I/O 缓存都被丢弃。我们假定捕捉此信号，而且 _exit 或 _Exit 的调用者并不想要冲洗缓冲区。
