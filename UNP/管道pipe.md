@@ -55,3 +55,46 @@ a FIFO for reading normally blocks until some other process opens the same FIFO 
 对于以只读方式（O_RDONLY）打开的FIFO文件，而且open调用是阻塞的（即第二个参数为O_RDONLY），除非有一个进程以写方式打开同一个FIFO，否则它不会返回；如果open调用是非阻塞的的（即第二个参数为O_RDONLY | O_NONBLOCK），则即使没有其他进程以写方式打开同一个FIFO文件，open调用将成功并立即返回。
 
 对于以只写方式（O_WRONLY）打开的FIFO文件，而且open调用是阻塞的（即第二个参数为O_WRONLY），open调用将被阻塞，直到有一个进程以只读方式打开同一个FIFO文件为止；如果open调用是非阻塞的（即第二个参数为O_WRONLY | O_NONBLOCK），open总会立即返回，但如果没有其他进程以只读方式打开同一个FIFO文件，open调用将返回-1，并且FIFO也不会被打开。
+
+## 查看PIPE_BUF
+
+```c
+ulimit -a
+core file size          (blocks, -c) 0
+data seg size           (kbytes, -d) unlimited
+scheduling priority             (-e) 0
+file size               (blocks, -f) unlimited
+pending signals                 (-i) 7975
+max locked memory       (kbytes, -l) 64
+max memory size         (kbytes, -m) unlimited
+open files                      (-n) 65535
+pipe size            (512 bytes, -p) 8
+POSIX message queues     (bytes, -q) 819200
+real-time priority              (-r) 0
+stack size              (kbytes, -s) 8192
+cpu time               (seconds, -t) unlimited
+max user processes              (-u) 7975
+virtual memory          (kbytes, -v) unlimited
+file locks                      (-x) unlimited
+```
+
+## 写入管道
+
+链接：<https://blog.csdn.net/xiangguiwang/article/details/80716181>
+
+ POSIX.1规定当写入管道的长度小于PIPE_BUF字节时必须是原子的：即写入数据作为连续序列写入管道。 超过PIPE_BUF字节的写入可能是非原子的：内核可能会将数据与其他进程写入的数据交错。 POSIX.1要求PIPE_BUF至少为512字节。(在Linux上，PIPE_BUF为4096字节）。在实践中取决于文件描述符是否为非阻塞（O_NONBLOCK），管道中是否有多个写入器，以及n要写入的字节数：
+
+情况1：O_NONBLOCK disabled, n <= PIPE_BUF
+
+    所有n个字节都以原子方式写入; write可能会阻止如果没有空间来立即写入n个字节。
+
+情况2：O_NONBLOCK enabled, n <= PIPE_BUF
+
+    如果有空间向管道写入n个字节，则立即write成功，写入全部n个字节; 否则失败，并将errno设置为EAGAIN。
+
+情况3：O_NONBLOCK disabled, n > PIPE_BUF
+    写入是非原子化的：write的数据可能会被写入（2）与其他进程交错; write阻塞，直到写入了n个字节。
+
+情况4：O_NONBLOCK enabled, n > PIPE_BUF
+
+​    如果管道已满，则写入（2）失败，并将errno设置为EAGAIN。 否则，可能会写入1到n个字节（即可能发生“部分写入”;调用者应该检查write（2）的返回值以查看实际写入的字节数），并且可以将这些字节与其他进程写入。
