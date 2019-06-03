@@ -1,3 +1,9 @@
+## 链接
+
+<https://www.cnblogs.com/Nancy5104/p/5338062.html>
+
+
+
 ## fork函数
 
 This function is called once but returns twice. 调用一次，返回两次。在子进程中返回0，父进程中返回新子进程的进程ID。
