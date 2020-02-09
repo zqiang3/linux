@@ -1,4 +1,16 @@
-## 文件和目录
+## File I/O
+
+```c
+int open(const char *path, int oflag, ... /* mode_t mode */)
+int create(const char *path, mod_t mode)
+// Returns file 
+```
+
+
+
+
+
+##  文件和目录
 
 ```c
 #include <sys/stat.h>
@@ -38,26 +50,6 @@ int fchdir(int fd);
 int fcntl(int filedes, int cmd, ... /* struct flock *flockptr */);  // 出错返回-1
 ```
 
-### struct flock
-
-```c
-struct flock {
-    short l_type;  /* F_RDLCK, F_WRLCK, or F_UNLCK */
-    off_t l_start;
-    short l_whence;
-    off_t l_len;
-    pid_t l_pid;
-};
-```
-
-| 当前区域状态   | 读锁 | 写锁 |
-| -------------- | ---- | ---- |
-| 无锁           | 允许 | 允许 |
-| 一个或多个读锁 | 允许 | 拒绝 |
-| 一个写锁       | 拒绝 | 拒绝 |
-
-
-
 
 
 ## 进程控制原语
@@ -79,7 +71,39 @@ void *realloc(void *ptr, size_t newsize);
 // All three return: pointer if OK, NULL on error
 void free(void *ptr);
 
+
+
 ```
+
+## Process Control
+
+```c
+#include <unistd.h>
+
+pid_t wait(int *statloc);
+pid_t waitpid(pid_t pid, int *statloc, int options);
+// Both return: process ID if OK, 0(see later), or -1 on error
+
+pid_t getpid(void);
+// Returns: process ID of calling process
+
+pid_t getppid(void);
+// Returns: parent process ID of calling process
+
+uid_t getuid(void);
+// Returns: real user ID of calling process
+
+uid_t geteuid(void);
+// Returns: effective user ID of calling process
+
+gid_t getgid(void);
+// Returns: real group ID of calling process
+
+gid_t getegid(void);
+// Returns: effective group ID of calling process
+```
+
+
 
 ## 线程
 

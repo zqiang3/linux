@@ -1,32 +1,268 @@
-## 操作系统线程模型
+## 线程标识
 
-当线程在用户空间下实现时，操作系统对线程的存在一无所知，操作系统只能看到进程，而不能看到线程。所有的线程都是在用户空间实现。在操作系统看来，每一个进程只有一个线程。过去的操作系统大部分是这种实现方式，这种方式的好处之一就是即使操作系统不支持线程，也可以通过库函数来支持线程。
-
-我们换一种通俗的方式来讲解这段话，首先就是在这在模型下，**程序员需要自己实现线程的数据结构、创建销毁和调度维护。也就相当于需要实现一个自己的线程调度内核**，而同时这些线程运行在操作系统的一个进程内，最后操作系统直接对进程进行调度。
-
-**优点**
-
-首先就是**确实在操作系统中实现了真实的多线程**，其次就是线**程的调度只是在用户态，减少了操作系统从内核态到用户态的切换开销。**
-
-**缺点**
-
-这种模式最致命的缺点也是由于操作系统不知道线程的存在，因此当一个进程中的某一个线程进行系统调用时，比如缺页中断而导致线程阻塞，此时操作系统会阻塞整个进程，即使这个进程中其它线程还在工作。还有一个问题是假如进程中一个线程长时间不释放CPU，因为用户空间并没有时钟中断机制，会导致此进程中的其它线程得不到CPU而持续等待。
+```c
+#include <pthread.h>
+int pthread_equal(pthread_t tid1, ptrhead_t tid2);
+// Returns: nonzero if equal, 0 otherwise
+pthread_t pthread_self(void);
+// Returns: the thread ID of the calling thread
+```
 
 
 
-Synchronous programing model is simpler than an asynchronous one.
+## 线程创建
 
-pthread_create 并不 像其他POSIX函数那样 设置errno 
+```c
+#include <pthread.h>
+int pthread_create(pthread_t *restrict tidp,
+                  const pthread_attr_t *restrict attr,
+                  void *(*start_rtn)(void *),
+                  void *restrict arg);
+// Returns: 0 if OK, error number on failure
+```
 
 
 
-A thread can exit in three ways
+## 线程终止
 
-return
+```c
+#include <pthread.h>
+void pthread_exit(void *rval_ptr);
+int pthread_join(pthread_t thread, void **rval_ptr);
+// Returns: 0 if OK, error number on failure
+int pthread_cancel(pthread_t tid);
+// Returns: 0 if OK, error number on failure
+void pthread_cleanup_push(void (*rtn)(void *), void *arg);
+void pthread_cleanup_pop(int execute);
+int pthread_detach(pthread_t tid);
+// Returns: 0 if OK, error number on failure
+```
 
-be canceled by another thread in the same process
 
-call pthread_exit
+
+## example
+
+###Creatation
+
+```c
+#include "apue.h"
+
+void printids(const char *);
+
+void * foo(void *arg)
+{
+    println("in foo");
+    printids("newthread");
+    return NULL;
+}
+
+void
+printids(const char *s)
+{
+    pid_t pid;
+    pthread_t tid;
+
+    pid = getpid();
+    tid = pthread_self();
+    printf("in %s, pid = %d, tid = %lu, tid = 0x%lx\n", s, pid, (long)tid, (long)tid);
+}
+
+int main()
+{
+    pthread_t tid;
+    int ret;
+    ret = pthread_create(&tid, NULL, foo, NULL);
+    printf("ret = %d\n", ret);
+    printids("main");
+    sleep(1);
+    println("finished");
+    return 0;
+}
+```
+
+
+
+### Termination
+
+返回普通值
+
+```c
+#include "apue.h"
+
+void *
+thread1(void *arg)
+{
+    sleep(3);
+    println("thread1");
+    return (void *)1;
+}
+
+void *
+thread2(void *arg)
+{
+    sleep(2);
+    println("thread2");
+    sleep(5);
+    pthread_exit((void *)2);
+}
+
+int main()
+{
+    pthread_t tid1, tid2;
+    void *retval;
+    int ret1, ret2;
+    if ((pthread_create(&tid1, NULL, thread1, NULL)) != 0)
+        err_sys("pthread_create failure");
+    if ((pthread_create(&tid2, NULL, thread2, NULL)) != 0)
+        err_sys("pthread_create failure");
+
+    int ret;
+    errno = 0;
+    if ((ret = pthread_join(tid1, &retval)) != 0)
+    {
+        printf("ret = %d, errno = %d\n", ret, errno);
+        err_sys("pthread_join failure");
+    }
+    printf("ret1 = %d\n", (int)retval);
+    if ((ret = pthread_join(tid2, &retval)) != 0)
+    {
+        printf("ret = %d, errno = %d\n", ret, errno);
+        err_sys("pthread_join failure");
+    }
+    printf("ret2 = %d\n", (int)retval);
+
+    sleep(1);
+    println("finished");
+
+
+
+    return 0;
+}
+```
+
+
+
+返回结构体
+
+```c
+#include "apue.h"
+
+struct foo {
+    int a, b, c, d;
+};
+
+
+
+void
+printfoo(const char *s, const struct foo *fp)
+{
+    printf("%s", s);
+    printf(" structure at 0x%lx\n", (long)fp);
+    printf(" foo.a = %d\n", fp->a);
+    printf(" foo.b = %d\n", fp->b);
+    printf(" foo.c = %d\n", fp->c);
+    printf(" foo.d = %d\n", fp->d);
+}
+
+void *
+thread1(void *arg)
+{
+    struct foo *f;
+    f = (struct foo *)malloc(sizeof(struct foo));
+    f->a = 1;
+    f->b = 1;
+    f->c = 1;
+    f->d = 1;
+    printfoo("thread1", f);
+    println("thread1");
+    pthread_exit((void *)f);
+}
+
+void *
+thread2(void *arg)
+{
+    println("thread2");
+    sleep(2);
+    pthread_exit((void *)0);
+}
+
+int main()
+{
+    pthread_t tid1, tid2;
+    void *retval;
+    struct foo *fp;
+    int ret1, ret2;
+    if ((pthread_create(&tid1, NULL, thread1, NULL)) != 0)
+        err_sys("pthread_create failure");
+    if ((pthread_create(&tid2, NULL, thread2, NULL)) != 0)
+        err_sys("pthread_create failure");
+
+    int ret;
+    errno = 0;
+    if ((ret = pthread_join(tid1, (void *)&fp)) != 0)
+    {
+        printf("ret = %d, errno = %d\n", ret, errno);
+        err_sys("pthread_join failure");
+    }
+    printfoo("parent", fp);
+    if ((ret = pthread_join(tid2, (void *)&fp)) != 0)
+    {
+        printf("ret = %d, errno = %d\n", ret, errno);
+        err_sys("pthread_join failure");
+    }
+
+    sleep(1);
+    println("finished");
+
+    return 0;
+}
+```
+
+cleanup
+
+```c
+#include "apue.h"
+
+void cleanup(void *arg)
+{
+    printf("arg is %s\n", (char *)arg);
+
+}
+
+void * fnc1(void *arg)
+{
+    println("fnc1");
+    pthread_cleanup_push(cleanup, "cleanup 1");
+    pthread_cleanup_push(cleanup, "cleanup 2");
+    println("register done");
+
+    if (arg)
+        //return (void *)1;
+        pthread_exit((void *)2);
+
+    pthread_cleanup_pop(1);
+    pthread_cleanup_pop(2);
+
+    //return (void *)2;
+    pthread_exit((void *)2);
+}
+
+int main()
+{
+    pthread_t tid;
+    int ret;
+    if ((ret = pthread_create(&tid, NULL, fnc1, (void *)2)) != 0)
+        err_sys("pthread_create fail");
+
+    void *rval;
+    if ((ret = pthread_join(tid, &rval)) != 0)
+        err_sys("pthread_join fail");
+
+    printf("rval = %d\n", (int)rval);
+    println("hello, world");
+    return 0;
+}
+```
 
 
 

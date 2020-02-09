@@ -112,3 +112,34 @@ int main(int argc, char *argv[])
 ## 僵死进程
 
 进程已终止，但其父进程尚未对其做善后处理的进程称为僵死进程(zombie)。ps命令将僵死进程的状态打印为Z。
+
+## fork与vfork
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+int global = 5;
+
+int main() {
+
+    int local = 10;
+    int pid = vfork();
+    if (pid == 0)
+    {
+        printf("Enter child\n");
+        global ++;
+        local ++;
+        _exit(0);
+    }
+    else
+    {
+        sleep(1);
+        printf("Enter parent\n");
+        printf("global = %d, local = %d\n", global, local);
+        exit(0);
+    }
+}
+```
+
