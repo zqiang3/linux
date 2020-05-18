@@ -1,9 +1,16 @@
 ## File I/O
 
 ```c
+#include <unistd.h>
+#include <fcntl.h>
 int open(const char *path, int oflag, ... /* mode_t mode */)
+// Return: file descriptor if OK, -1 on error
 int create(const char *path, mod_t mode)
 // Returns file 
+ssize_t read(int fd, void *buf, size_t nbytes);
+// Returns: number of bytes read, 0 if end of file, -1 on error
+ssize_t write(int fd, const void *buf, size_t nbytes);
+// Returns: number of bytes written if OK, -1 on error
 ```
 
 

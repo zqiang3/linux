@@ -68,7 +68,7 @@ struct sockaddr_in {
 
 ## Connection Establishment
 
-###bind
+### bind
 
 ```c
 #include <sys/socket.h>
@@ -90,7 +90,7 @@ int getpeername(int sockfd,
                socklen_t *restrict alenp);
 ```
 
-###connect
+### connect
 
 ```c
 int connect(int sockfd,
@@ -99,14 +99,14 @@ int connect(int sockfd,
 // Returns: 0 if OK, -1 on error
 ```
 
-###listen
+### listen
 
 ```c
 int listen(int sockfd, int backlog);
 // Returns: 0 if OK, -1 on error
 ```
 
-###accept
+### accept
 
 ```c
 int accept(int sockfd,
@@ -115,7 +115,7 @@ int accept(int sockfd,
 // Returns: file descriptor if OK, -1 on error
 ```
 
-###init_server
+### init_server
 
 ```c
 void init_server()
@@ -141,6 +141,10 @@ ssize_t recv(int sockfd, void *buf, size_t nbytes, int flags);
 ssize_t recvfrom(int sockfd, void *restrict buf, size_t len, int flags, struct sockaddr *restrict addrlen);
 ssize_t recvmsg(int sockfd, struct msghdr *msg, int flags);
 ```
+
+
+
+## Connection-Oriented Client
 
 
 
