@@ -1,30 +1,7 @@
-## File I/O
-
-```c
-#include <unistd.h>
-#include <fcntl.h>
-int open(const char *path, int oflag, ... /* mode_t mode */)
-// Return: file descriptor if OK, -1 on error
-int create(const char *path, mod_t mode)
-// Returns file 
-ssize_t read(int fd, void *buf, size_t nbytes);
-// Returns: number of bytes read, 0 if end of file, -1 on error
-ssize_t write(int fd, const void *buf, size_t nbytes);
-// Returns: number of bytes written if OK, -1 on error
-```
-
-
-
-
-
 ##  文件和目录
 
 ```c
-#include <sys/stat.h>
-int stat(const char *restrict pathname, struct stat *restrict buf);
-int stat(int fd, struct stat *buf);
-int lstat(const char *restrict pathname, struct stat *restrict buf);
-// All three return: 0 if OK, -1 on error
+
 
 int chmod(const char *pathname, mode_t mode);
 int fchmod(int fd, mode_t mode);
@@ -84,31 +61,49 @@ void free(void *ptr);
 
 ## Process Control
 
-```c
-#include <unistd.h>
+### Changing User IDs and Group IDs
 
-pid_t wait(int *statloc);
-pid_t waitpid(pid_t pid, int *statloc, int options);
-// Both return: process ID if OK, 0(see later), or -1 on error
+rules:
 
-pid_t getpid(void);
-// Returns: process ID of calling process
+1. 如果进程有超级用户权限（进程的real user id是super uid），将real user id, effective user id saved set-user-id设为uid
+2. 如果没有超级用户权限，但是文件的uid等于进程的real user id或者是saved set-user-id，则只将有效用户id设为uid。
+3. 如果上述两种情况都不符合，则返回-1, 并将errno 设为EPERM
 
-pid_t getppid(void);
-// Returns: parent process ID of calling process
 
-uid_t getuid(void);
-// Returns: real user ID of calling process
 
-uid_t geteuid(void);
-// Returns: effective user ID of calling process
+内核维护的id说明：
 
-gid_t getgid(void);
-// Returns: real group ID of calling process
+1. 只有超级用户权限的进程可以修改real user id。real user id是在login的时候设置的。意思是，登录的时候，你是哪个用户，real user id就是谁。比如，你登录用zhangqiang, 则real user id就是对应zhangqiang这个用户的id。
+2. 有效用户id可以由exec函数设置（在程序文件设置set-user-id位设置的情况）。如果该位没设置，euid保留为现在的值。可以通过调用 setuid来设置euid为ruid或saved set-uset-id。不能随意改变euid的值。
+3. saved set-user-id是由exec从euid拷贝的。如果文件的set-user-id位设置了，
 
-gid_t getegid(void);
-// Returns: effective group ID of calling process
-```
+### user id和group id分类
+
+user id 分为
+
+1) real user id
+
+2) effective user id
+
+3) sticky user id
+
+group id 也类似分为：
+
+1) real group id 
+
+2) effective group id 
+
+3) sticky group id
+
+RUID 是进程创建者的user id，只有root用户可以修改
+
+euid是进程执行过程中实际拥有哪个有效用户的权限，这个用户的user id就是euid
+
+suid是程序属主的user id, 设置sticky位之后，当执行这个程序时，不管执行者的uid是多少，euid都会变成那个程序属主的uid
+
+你以什么身份执行一个程序，这个进程就属于谁，这个相当容易理解。
+
+set-user-ID位被设置，也就是文件权限位第三位是s的时候 ，exec会把进程的effective user id设置为文件所有者ID
 
 
 
